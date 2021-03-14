@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
+import com.udacity.jwdnd.course1.cloudstorage.constant.CredentialMessageEnum;
 import com.udacity.jwdnd.course1.cloudstorage.dao.CredentialsDAO;
 import com.udacity.jwdnd.course1.cloudstorage.model.Credentials;
 import com.udacity.jwdnd.course1.cloudstorage.model.Users;
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.List;
 
 @Controller
 @RequestMapping("/credentials")
@@ -30,23 +32,40 @@ public class CredentialController {
     @PostMapping
     public String saveCredential(Authentication auth, @ModelAttribute CredentialsDAO credential, RedirectAttributes redirectAttributes) {
         Users userDb = userService.getUser(auth.getName());
-        SecureRandom random = new SecureRandom();
+        List<Credentials> existingCredentials = credentialService.getCredentialsByUsername(credential.getUsername());
 
+        if (!existingCredentials.isEmpty()) {
+            redirectAttributes.addAttribute("message", CredentialMessageEnum.CREDENTIAL_DUPLICATED.message);
+            redirectAttributes.addAttribute("warning", true);
+            return "redirect:/result";
+        }
+
+        SecureRandom random = new SecureRandom();
         byte[] key = new byte[16];
         random.nextBytes(key);
         String encodedKey = Base64.getEncoder().encodeToString(key);
-        String encryptedPassword = encryptionService.encryptValue(credential.getPassword(), encodedKey);
 
         if (credential.getCredentialId() == null || credential.getCredentialId() <= 0) {
-            Credentials newCredential = new Credentials(credential.getCredentialId(), credential.getUrl(), credential.getUsername(), encodedKey, encryptedPassword, userDb.getUserId());
-            credentialService.saveCredential(newCredential);
-            redirectAttributes.addAttribute("createCredential", true);
-            redirectAttributes.addAttribute("success", true);
+            Credentials newCredential = new Credentials(credential.getCredentialId(), credential.getUrl(), credential.getUsername(), encodedKey, credential.getPassword(), userDb.getUserId());
+            try {
+                credentialService.saveCredential(newCredential);
+                redirectAttributes.addAttribute("message", CredentialMessageEnum.CREDENTIAL_CREATED.message);
+                redirectAttributes.addAttribute("success", true);
+            } catch (Exception e) {
+                redirectAttributes.addAttribute("message", e.getMessage());
+                redirectAttributes.addAttribute("danger", true);
+            }
+
         } else {
-            Credentials updatedCredential = new Credentials(credential.getCredentialId(), credential.getUrl(), credential.getUsername(), encodedKey, encryptedPassword, userDb.getUserId());
-            credentialService.updateCredential(updatedCredential);
-            redirectAttributes.addAttribute("updateCredential", true);
-            redirectAttributes.addAttribute("success", true);
+            Credentials updatedCredential = new Credentials(credential.getCredentialId(), credential.getUrl(), credential.getUsername(), encodedKey, credential.getPassword(), userDb.getUserId());
+            try {
+                credentialService.updateCredential(updatedCredential);
+                redirectAttributes.addAttribute("message", CredentialMessageEnum.CREDENTIAL_UPDATED.message);
+                redirectAttributes.addAttribute("success", true);
+            } catch (Exception e) {
+                redirectAttributes.addAttribute("message", e.getMessage());
+                redirectAttributes.addAttribute("danger", true);
+            }
         }
 
         return "redirect:/result";
@@ -55,7 +74,7 @@ public class CredentialController {
     @GetMapping("/delete/{credentialId}")
     public String deleteCredential(@PathVariable(value = "credentialId") int credentialId, RedirectAttributes redirectAttributes) {
         this.credentialService.deleteCredential(credentialId);
-        redirectAttributes.addAttribute("deleteCredential", true);
+        redirectAttributes.addAttribute("message", CredentialMessageEnum.CREDENTIAL_DELETED.message);
         redirectAttributes.addAttribute("success", true);
         return "redirect:/result";
     }

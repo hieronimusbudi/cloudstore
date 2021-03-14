@@ -10,6 +10,9 @@ public interface CredentialsMapper {
     @Select("SELECT * FROM CREDENTIALS WHERE userid = #{userId}")
     List<Credentials> getCredentials(int userId);
 
+    @Select("SELECT * FROM CREDENTIALS WHERE username = #{username}")
+    List<Credentials> getCredentialsByUsername(String username);
+
     @Insert("INSERT INTO CREDENTIALS (url, username, key, password, userid) VALUES(#{url}, #{username}, #{key}, #{password}, #{userId})")
     int insert(String url, String username, String key, String password, int userId);
 

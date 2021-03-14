@@ -15,53 +15,58 @@
             th:if="${param.success}"
     >
         <h1 class="display-5">Success</h1>
-
-        <span id="create-credential-msg" th:if="${param.createCredential}">
-                    You successfully created a credential.
-                </span>
-        <span id="update-credential-msg" th:if="${param.updateCredential}">
-                    You successfully updated a credential.
-                </span>
-        <span id="delete-credential-msg" th:if="${param.deleteCredential}">
-                    You successfully deleted a credential.
-                </span>
-        <span id="success-msg" th:if="${param.createNote}">
-                    You successfully created a note.
-                </span>
-        <span id="delete-msg" th:if="${param.deleteNote}">
-                    You deleted a note.
-                </span>
-        <span id="update-msg" th:if="${param.updateNote}">
-                    You updated a note.
-                </span>
-        <span id="deleteFile-msg" th:if="${param.deleteFile}">
-                    You deleted a file.
-                </span>
-        <span id="uploadFile-msg" th:if="${param.uploadFile}">
-                    File uploaded!
-                </span>
+        <span id="success-msg" th:if="${param.message}" th:text="${param.message}" style="white-space: pre-line;">Success!</span>
+<!--        <span id="create-credential-msg" th:if="${param.createCredential}">-->
+<!--                    You successfully created a credential.-->
+<!--                </span>-->
+<!--        <span id="update-credential-msg" th:if="${param.updateCredential}">-->
+<!--                    You successfully updated a credential.-->
+<!--                </span>-->
+<!--        <span id="delete-credential-msg" th:if="${param.deleteCredential}">-->
+<!--                    You successfully deleted a credential.-->
+<!--                </span>-->
+<!--        <span id="success-msg" th:if="${param.createNote}">-->
+<!--                    You successfully created a note.-->
+<!--                </span>-->
+<!--        <span id="delete-msg" th:if="${param.deleteNote}">-->
+<!--                    You deleted a note.-->
+<!--                </span>-->
+<!--        <span id="update-msg" th:if="${param.updateNote}">-->
+<!--                    You updated a note.-->
+<!--                </span>-->
+<!--        <span id="deleteFile-msg" th:if="${param.deleteFile}">-->
+<!--                    You deleted a file.-->
+<!--                </span>-->
+<!--        <span id="uploadFile-msg" th:if="${param.uploadFile}">-->
+<!--                    File uploaded!-->
+<!--                </span>-->
+        <br>
         <span>Click <a id="homeHref-success" href="/home">here</a> to continue.</span>
     </div>
 
     <div class="alert alert-warning fill-parent" th:if="${param.warning}">
-        <h1 class="display-5">Error</h1>
+        <h1 class="display-5">Warning</h1>
+        <span id="warning-msg" th:if="${param.message}" th:text="${param.message}" style="white-space: pre-line;">Warning!</span>
+        <br>
         <span>Click <a id="homeHref-warning" href="/home">here</a> to continue.</span>
     </div>
 
     <div class="alert alert-danger fill-parent" th:if="${param.danger}">
         <h1 class="display-5">Error</h1>
-        <span id="selectFile-msg" th:if="${param.selectFile}">
-                    Please a select a File!
-                </span>
-        <div id="duplicateUploadFile-msg" th:if="${param.duplicateUploadFile}">
-            File already exists!
-        </div>
-        <span id="deleteFileError-msg" th:if="${param.deleteFileError}">
-                    Failed to delete file.
-                </span>
-        <span id="uploadFileError-msg" th:if="${param.uploadFileError}">
-                    Failed to upload file.
-                </span>
+        <span id="error-msg" th:if="${param.message}" th:text="${param.message}" style="white-space: pre-line;">Error!</span>
+<!--        <span id="selectFile-msg" th:if="${param.selectFile}">-->
+<!--                    Please a select a File!-->
+<!--                </span>-->
+<!--        <div id="duplicateUploadFile-msg" th:if="${param.duplicateUploadFile}">-->
+<!--            File already exists!-->
+<!--        </div>-->
+<!--        <span id="deleteFileError-msg" th:if="${param.deleteFileError}">-->
+<!--                    Failed to delete file.-->
+<!--                </span>-->
+<!--        <span id="uploadFileError-msg" th:if="${param.uploadFileError}">-->
+<!--                    Failed to upload file.-->
+<!--                </span>-->
+        <br>
         <span>Click <a id="homeHref-danger" href="/home">here</a> to continue.</span>
     </div>
 

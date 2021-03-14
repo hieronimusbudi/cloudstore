@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface NoteMapper {
     @Select("SELECT * FROM NOTES WHERE notetitle = #{noteTitle}")
-    Notes getNote(String noteTitle);
+    List<Notes> getNotesByTitle(String noteTitle);
 
     @Insert("INSERT INTO NOTES (notetitle, notedescription, userid ) VALUES(#{noteTitle}, #{noteDescription}, #{userId})")
     void insert(String noteTitle, String noteDescription, int userId);

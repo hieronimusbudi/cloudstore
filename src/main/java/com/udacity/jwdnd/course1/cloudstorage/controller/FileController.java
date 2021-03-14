@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
+import com.udacity.jwdnd.course1.cloudstorage.constant.FileMessageEnum;
 import com.udacity.jwdnd.course1.cloudstorage.model.Files;
 import com.udacity.jwdnd.course1.cloudstorage.model.Users;
 import com.udacity.jwdnd.course1.cloudstorage.service.FileService;
@@ -12,6 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.naming.SizeLimitExceededException;
+import java.io.File;
 
 @Controller
 @RequestMapping("/files")
@@ -31,18 +35,19 @@ public class FileController {
             Files checkedFile = fileService.getFileByName(fileUpload.getOriginalFilename());
 
             if (checkedFile != null && checkedFile.getFileName().equals(fileUpload.getOriginalFilename())) {
-                redirectAttributes.addAttribute("duplicateUploadFile", true);
+                redirectAttributes.addAttribute("message", FileMessageEnum.DUPLICATE_FILE.message);
                 redirectAttributes.addAttribute("danger", true);
             } else if (fileUpload.getSize() > 0) {
                 fileService.uploadFile(fileUpload, userDb.getUserId());
-                redirectAttributes.addAttribute("uploadFile", true);
+                redirectAttributes.addAttribute("message", FileMessageEnum.FILE_UPLOADED.message);
                 redirectAttributes.addAttribute("success", true);
             } else {
-                redirectAttributes.addAttribute("selectFile", true);
+                redirectAttributes.addAttribute("message", FileMessageEnum.SELECT_FILE.message);
                 redirectAttributes.addAttribute("danger", true);
             }
-        } catch (Exception e) {
-            redirectAttributes.addAttribute("uploadFileError", true);
+        }
+        catch (Exception e) {
+            redirectAttributes.addAttribute("message", e.getMessage());
             redirectAttributes.addAttribute("danger", true);
         }
 
@@ -64,10 +69,10 @@ public class FileController {
             Files fileById = fileService.getFileById(fileId);
             fileService.removeFileInPath(fileById.getFileName());
             fileService.deleteFile(fileId);
-            redirectAttributes.addAttribute("deleteFile", true);
+            redirectAttributes.addAttribute("message", FileMessageEnum.FILE_DELETED.message);
             redirectAttributes.addAttribute("success", true);
         } catch (Exception e) {
-            redirectAttributes.addAttribute("deleteFileError", true);
+            redirectAttributes.addAttribute("message", e.getMessage());
             redirectAttributes.addAttribute("danger", true);
         }
 

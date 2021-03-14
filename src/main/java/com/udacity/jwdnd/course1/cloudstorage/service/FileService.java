@@ -1,7 +1,12 @@
 package com.udacity.jwdnd.course1.cloudstorage.service;
 
+import com.udacity.jwdnd.course1.cloudstorage.constant.FileMessageEnum;
+import com.udacity.jwdnd.course1.cloudstorage.constant.NoteMessageEnum;
 import com.udacity.jwdnd.course1.cloudstorage.mapper.FileMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.Files;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -21,6 +26,9 @@ public class FileService {
     private final FileMapper fileMapper;
     private final Path root = Paths.get("uploads");
 
+    @Autowired
+    private MultipartProperties multipartProperties;
+
     public FileService(FileMapper fileMapper) {
         this.fileMapper = fileMapper;
     }
@@ -36,8 +44,22 @@ public class FileService {
         }
     }
 
+    private void validateValue(MultipartFile file) throws Exception {
+        String message = "";
+        Boolean isError = false;
+        if (file.getSize() > multipartProperties.getMaxFileSize().hashCode()) {
+            isError = true;
+            message += FileMessageEnum.EXCEEDED_FILE_SIZE_LIMIT.message;
+        }
+
+        if (isError) {
+            throw new Exception(message);
+        }
+    }
+
     public Integer uploadFile(MultipartFile file, int userId) {
         try {
+            validateValue(file);
             java.nio.file.Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
 
             Files newFile = new Files(null, file.getOriginalFilename(), file.getContentType(), Long.toString(file.getSize()), userId, file.getBytes());
